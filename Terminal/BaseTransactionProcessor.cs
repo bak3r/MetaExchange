@@ -1,5 +1,4 @@
-﻿using Core.Implementations.DTOs;
-using Core.Interfaces;
+﻿using Core.Interfaces;
 
 namespace Terminal
 {
@@ -10,14 +9,20 @@ namespace Terminal
         private readonly ICryptoExchangePresenter _cryptoExchangePresenter;
         private readonly ITransactionRequestRetriever _transactionRequestRetriever;
         private readonly ITransactionRequestPresenter _transactionRequestPresenter;
+        private readonly ITransactionRequestProcessor _transactionRequestProcessor;
 
-        public BaseTransactionProcessor(IOrderBookRetriever orderBookRetriever, ICryptoExchangeCreator cryptoExchangeCreator, ICryptoExchangePresenter cryptoExchangePresenter, ITransactionRequestRetriever transactionRequestRetriever, ITransactionRequestPresenter transactionRequestPresenter)
+        public BaseTransactionProcessor(IOrderBookRetriever orderBookRetriever,
+            ICryptoExchangeCreator cryptoExchangeCreator, ICryptoExchangePresenter cryptoExchangePresenter,
+            ITransactionRequestRetriever transactionRequestRetriever,
+            ITransactionRequestPresenter transactionRequestPresenter,
+            ITransactionRequestProcessor transactionRequestProcessor)
         {
             _orderBookRetriever = orderBookRetriever;
             _cryptoExchangeCreator = cryptoExchangeCreator;
             _cryptoExchangePresenter = cryptoExchangePresenter;
             _transactionRequestRetriever = transactionRequestRetriever;
             _transactionRequestPresenter = transactionRequestPresenter;
+            _transactionRequestProcessor = transactionRequestProcessor;
         }
 
         public void Run()
@@ -31,6 +36,8 @@ namespace Terminal
             foreach (var transactionRequest in transactionRequests)
             {
                 _transactionRequestPresenter.DisplayTransactionRequestInfo(transactionRequest);
+
+                _transactionRequestProcessor.ProcessTransaction(transactionRequest, cryptoExchanges);
             }
         }
     }

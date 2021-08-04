@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Core.Implementations;
 using Core.Interfaces;
 using Infrastructure.CryptoExchanges;
 using Infrastructure.OrderBookRetrieval;
@@ -26,6 +27,9 @@ namespace Terminal
             services.AddTransient<ICryptoExchangePresenter, TerminalCryptoExchangePresenter>();
             services.AddTransient<ITransactionRequestRetriever, DummyTransactionRequestRetriever>();
             services.AddTransient<ITransactionRequestPresenter, TerminalTransactionRequestPresenter>();
+            services.AddTransient<ITransactionRequestProcessor, TransactionRequestProcessor>();
+            services.AddTransient<IBuyTransactionRequestProcessor, SimpleBuyTransactionRequestProcessor>();
+            services.AddTransient<ISellTransactionRequestProcessor, SimpleSellTransactionRequestProcessor>();
 
             services.AddTransient<BaseTransactionProcessor>();
         }
