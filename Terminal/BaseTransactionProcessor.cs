@@ -37,7 +37,9 @@ namespace Terminal
             {
                 _transactionRequestPresenter.DisplayTransactionRequestInfo(transactionRequest);
 
-                _transactionRequestProcessor.ProcessTransaction(transactionRequest, cryptoExchanges);
+                var hedgerTransactions = _transactionRequestProcessor.ProcessTransaction(transactionRequest, cryptoExchanges);
+
+
             }
         }
     }

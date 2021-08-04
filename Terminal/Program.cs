@@ -2,6 +2,7 @@
 using Core.Implementations;
 using Core.Interfaces;
 using Infrastructure.CryptoExchanges;
+using Infrastructure.HedgerTransactions;
 using Infrastructure.OrderBookRetrieval;
 using Infrastructure.TransactionRequests;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,7 @@ namespace Terminal
             services.AddTransient<ITransactionRequestProcessor, TransactionRequestProcessor>();
             services.AddTransient<IBuyTransactionRequestProcessor, SimpleBuyTransactionRequestProcessor>();
             services.AddTransient<ISellTransactionRequestProcessor, SimpleSellTransactionRequestProcessor>();
+            services.AddTransient<IHedgerTransactionPresenter, TerminalHedgerTransactionPresenter>();
 
             services.AddTransient<BaseTransactionProcessor>();
         }
