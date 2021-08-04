@@ -2,6 +2,7 @@
 using Core.Interfaces;
 using Infrastructure.CryptoExchanges;
 using Infrastructure.OrderBookRetrieval;
+using Infrastructure.TransactionRequests;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Terminal
@@ -23,9 +24,10 @@ namespace Terminal
             services.AddTransient<IOrderBookRetriever, FileOrderBookRetriever>();
             services.AddTransient<ICryptoExchangeCreator, DummyCryptoExchangeCreator>();
             services.AddTransient<ICryptoExchangePresenter, TerminalCryptoExchangePresenter>();
+            services.AddTransient<ITransactionRequestRetriever, DummyTransactionRequestRetriever>();
+            services.AddTransient<ITransactionRequestPresenter, TerminalTransactionRequestPresenter>();
 
             services.AddTransient<BaseTransactionProcessor>();
         }
     }
-    
 }
