@@ -21,8 +21,10 @@ namespace Core.Implementations
             switch (transactionRequest.OrderType)
             {
                 case OrderType.Buy:
-                    var buyHedgerTransactions = _buyTransactionRequestProcessor.ProcessTransaction(transactionRequest, cryptoExchanges);
-                    return buyHedgerTransactions;
+                    var buyRequestProcessorResult = _buyTransactionRequestProcessor.ProcessTransaction(transactionRequest, cryptoExchanges);
+                    if(buyRequestProcessorResult.TransactionIsValid)
+                        return buyRequestProcessorResult.HedgerTransactions;
+                    break;
                 case OrderType.Sell:
                     var sellHedgerTransactions = _sellTransactionRequestProcessor.ProcessTransaction(transactionRequest, cryptoExchanges);
                     return sellHedgerTransactions;

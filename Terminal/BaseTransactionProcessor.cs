@@ -10,12 +10,14 @@ namespace Terminal
         private readonly ITransactionRequestRetriever _transactionRequestRetriever;
         private readonly ITransactionRequestPresenter _transactionRequestPresenter;
         private readonly ITransactionRequestProcessor _transactionRequestProcessor;
+        private readonly IHedgerTransactionPresenter _hedgerTransactionPresenter;
 
         public BaseTransactionProcessor(IOrderBookRetriever orderBookRetriever,
             ICryptoExchangeCreator cryptoExchangeCreator, ICryptoExchangePresenter cryptoExchangePresenter,
             ITransactionRequestRetriever transactionRequestRetriever,
             ITransactionRequestPresenter transactionRequestPresenter,
-            ITransactionRequestProcessor transactionRequestProcessor)
+            ITransactionRequestProcessor transactionRequestProcessor,
+            IHedgerTransactionPresenter hedgerTransactionPresenter)
         {
             _orderBookRetriever = orderBookRetriever;
             _cryptoExchangeCreator = cryptoExchangeCreator;
@@ -23,6 +25,7 @@ namespace Terminal
             _transactionRequestRetriever = transactionRequestRetriever;
             _transactionRequestPresenter = transactionRequestPresenter;
             _transactionRequestProcessor = transactionRequestProcessor;
+            _hedgerTransactionPresenter = hedgerTransactionPresenter;
         }
 
         public void Run()
@@ -39,7 +42,7 @@ namespace Terminal
 
                 var hedgerTransactions = _transactionRequestProcessor.ProcessTransaction(transactionRequest, cryptoExchanges);
 
-
+                _hedgerTransactionPresenter.DisplayHedgerTransactions(hedgerTransactions);
             }
         }
     }
