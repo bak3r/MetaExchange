@@ -105,6 +105,24 @@ namespace UnitTests
             Assert.IsTrue(result[0].Order.Amount == 1m);
         }
 
+        [Test]
+        public void T08_PrepareListOfAsksToSatisfyTransactionAmount_HigherAmountWithLowerPriceAskExists_TheLowerPricedAskIsSelected()
+        {
+            var simpleAskCombinationSelector = CreateSimpleAskCombinationSelector();
+            var stubListOfAsks = new List<Ask>();
+            var stubAsk1 = new Ask { Order = new Order() { Amount = 0.5m, Price = 1m } };
+            var stubAsk2 = new Ask { Order = new Order() { Amount = 3m, Price = 3m } };
+            var stubAsk3 = new Ask { Order = new Order() { Amount = 10m, Price = 0.5m } };
+            stubListOfAsks.Add(stubAsk1);
+            stubListOfAsks.Add(stubAsk2);
+            stubListOfAsks.Add(stubAsk3);
+            var result = simpleAskCombinationSelector.PrepareListOfAsksToSatisfyTransactionAmount(1m, stubListOfAsks);
+
+            Assert.IsTrue(result.Count == 1);
+            Assert.IsTrue(result[0].Order.Price == 0.5m);
+            Assert.IsTrue(result[0].Order.Amount == 1m);
+        }
+
         #region HelperMethods
 
         private SimpleAskCombinationSelector CreateSimpleAskCombinationSelector()

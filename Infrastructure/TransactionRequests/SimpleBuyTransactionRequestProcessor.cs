@@ -17,49 +17,59 @@ namespace Infrastructure.TransactionRequests
         }
         public BuyRequestProcessorResult ProcessTransaction(TransactionRequest transactionRequest, List<CryptoExchange> cryptoExchanges)
         {
-            var cryptoExchangesWithEnoughBalance = (from e in cryptoExchanges
-                                                    where e.BalanceBtc >= transactionRequest.TransactionAmount
-                                                    select e).ToList();
-
-            if (cryptoExchangesWithEnoughBalance.Any())
+            if (transactionRequest.TransactionAmount != 0)
             {
-                var tradeableExchangesWithFilteredAskLists = new Dictionary<string, List<Ask>>();
+                var cryptoExchangesWithEnoughBalance = (from e in cryptoExchanges
+                                                        where e.BalanceBtc >= transactionRequest.TransactionAmount
+                                                        select e).ToList();
 
-                foreach (var cryptoExchange in cryptoExchangesWithEnoughBalance)
+                if (cryptoExchangesWithEnoughBalance.Any())
                 {
-                    var filteredAskListForCryptoExchange = _askCombinationSelector.PrepareListOfAsksToSatisfyTransactionAmount(
-                        transactionRequest.TransactionAmount, cryptoExchange.OrderBook.Asks);
-                    if (filteredAskListForCryptoExchange != null)
-                        tradeableExchangesWithFilteredAskLists.Add(cryptoExchange.Name, filteredAskListForCryptoExchange);
-                }
+                    var tradeableExchangesWithFilteredAskLists = new Dictionary<string, List<Ask>>();
 
-                var (selectedCryptoExchangeName, listOfNeededAsksToCompleteTransaction) =
-                    _exchangeSelector.FindExchangeWithLowestPossibleAskTransactionCost(
-                        tradeableExchangesWithFilteredAskLists);
-
-                if (listOfNeededAsksToCompleteTransaction.Any())
-                {
-                    var hedgerTransactions = new List<HedgerTransaction>();
-
-                    foreach (var singleAsk in listOfNeededAsksToCompleteTransaction)
+                    foreach (var cryptoExchange in cryptoExchangesWithEnoughBalance)
                     {
-                        var hedgerTransaction = new HedgerTransaction
+                        var filteredAskListForCryptoExchange = _askCombinationSelector.PrepareListOfAsksToSatisfyTransactionAmount(
+                            transactionRequest.TransactionAmount, cryptoExchange.OrderBook.Asks);
+                        if (filteredAskListForCryptoExchange != null)
+                            tradeableExchangesWithFilteredAskLists.Add(cryptoExchange.Name, filteredAskListForCryptoExchange);
+                    }
+
+                    var (selectedCryptoExchangeName, listOfNeededAsksToCompleteTransaction) =
+                        _exchangeSelector.FindExchangeWithLowestPossibleAskTransactionCost(
+                            tradeableExchangesWithFilteredAskLists);
+
+                    if (listOfNeededAsksToCompleteTransaction != null && listOfNeededAsksToCompleteTransaction.Any())
+                    {
+                        var hedgerTransactions = new List<HedgerTransaction>();
+
+                        foreach (var singleAsk in listOfNeededAsksToCompleteTransaction)
                         {
-                            CryptoExchange = selectedCryptoExchangeName,
-                            Order = singleAsk.Order
-                        };
-                        hedgerTransactions.Add(hedgerTransaction);
+                            var hedgerTransaction = new HedgerTransaction
+                            {
+                                CryptoExchange = selectedCryptoExchangeName,
+                                Order = singleAsk.Order
+                            };
+                            hedgerTransactions.Add(hedgerTransaction);
+                        }
+
+                        return new BuyRequestProcessorResult()
+                        { TransactionIsValid = true, HedgerTransactions = hedgerTransactions };
                     }
 
                     return new BuyRequestProcessorResult()
-                    { TransactionIsValid = true, HedgerTransactions = hedgerTransactions };
+                    {
+                        TransactionIsValid = false,
+                        ErrorMessage =
+                            "List of Asks to complete transaction was null or empty or not enough asks exist to satisfy the requested amount."
+                    };
                 }
-
                 return new BuyRequestProcessorResult()
-                { TransactionIsValid = false, ErrorMessage = "List of Asks to complete transaction was empty."};
+                { TransactionIsValid = false, ErrorMessage = "No crypto exchange with enough balance exist." };
             }
             return new BuyRequestProcessorResult()
-                { TransactionIsValid = false, ErrorMessage = "No crypto exchange with enough balance exist."};
+                { TransactionIsValid = false, ErrorMessage = "Transaction amount must be larger than 0." };
+
         }
     }
 }
