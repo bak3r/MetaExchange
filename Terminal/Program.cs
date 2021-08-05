@@ -6,6 +6,7 @@ using Infrastructure.CryptoExchanges;
 using Infrastructure.HedgerTransactions;
 using Infrastructure.OrderBookRetrieval;
 using Infrastructure.TransactionRequests;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Terminal
@@ -24,10 +25,15 @@ namespace Terminal
 
         private static void ConfigureServices(ServiceCollection services)
         {
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", false)
+                .Build();
+
+            services.AddSingleton<IConfiguration>(configuration);
             services.AddTransient<IOrderBookRetriever, FileOrderBookRetriever>();
             services.AddTransient<ICryptoExchangeCreator, DummyCryptoExchangeCreator>();
             services.AddTransient<ICryptoExchangePresenter, TerminalCryptoExchangePresenter>();
-            services.AddTransient<ITransactionRequestRetriever, DummyTransactionRequestRetriever>();
+            services.AddTransient<ITransactionRequestRetriever, JsonTransactionRequestRetriever>();
             services.AddTransient<ITransactionRequestPresenter, TerminalTransactionRequestPresenter>();
             services.AddTransient<ITransactionRequestProcessor, TransactionRequestProcessor>();
             services.AddTransient<IBuyTransactionRequestProcessor, SimpleBuyTransactionRequestProcessor>();
@@ -35,6 +41,7 @@ namespace Terminal
             services.AddTransient<IHedgerTransactionPresenter, TerminalHedgerTransactionPresenter>();
             services.AddTransient<IExchangeSelector, SimpleExchangeSelector>();
             services.AddTransient<IAskCombinationSelector, SimpleAskCombinationSelector>();
+            
 
             services.AddTransient<BaseTransactionProcessor>();
         }

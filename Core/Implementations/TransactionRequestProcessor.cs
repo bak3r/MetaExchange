@@ -16,18 +16,16 @@ namespace Core.Implementations
             _sellTransactionRequestProcessor = sellTransactionRequestProcessor;
         }
 
-        public List<HedgerTransaction> ProcessTransaction(TransactionRequest transactionRequest, List<CryptoExchange> cryptoExchanges)
+        public RequestProcessorResult ProcessTransaction(TransactionRequest transactionRequest, List<CryptoExchange> cryptoExchanges)
         {
             switch (transactionRequest.OrderType)
             {
                 case OrderType.Buy:
                     var buyRequestProcessorResult = _buyTransactionRequestProcessor.ProcessTransaction(transactionRequest, cryptoExchanges);
-                    if(buyRequestProcessorResult.TransactionIsValid)
-                        return buyRequestProcessorResult.HedgerTransactions;
-                    break;
+                    return buyRequestProcessorResult;
                 case OrderType.Sell:
-                    var sellHedgerTransactions = _sellTransactionRequestProcessor.ProcessTransaction(transactionRequest, cryptoExchanges);
-                    return sellHedgerTransactions;
+                    var sellRequestProcessorResult = _sellTransactionRequestProcessor.ProcessTransaction(transactionRequest, cryptoExchanges);
+                    return sellRequestProcessorResult;
             }
 
             return null;

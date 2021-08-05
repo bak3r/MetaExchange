@@ -1,4 +1,7 @@
-﻿using Core.Interfaces;
+﻿using System;
+using System.Globalization;
+using Core.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 namespace Terminal
 {
@@ -11,13 +14,15 @@ namespace Terminal
         private readonly ITransactionRequestPresenter _transactionRequestPresenter;
         private readonly ITransactionRequestProcessor _transactionRequestProcessor;
         private readonly IHedgerTransactionPresenter _hedgerTransactionPresenter;
+        private readonly IConfiguration _configuration;
 
         public BaseTransactionProcessor(IOrderBookRetriever orderBookRetriever,
             ICryptoExchangeCreator cryptoExchangeCreator, ICryptoExchangePresenter cryptoExchangePresenter,
             ITransactionRequestRetriever transactionRequestRetriever,
             ITransactionRequestPresenter transactionRequestPresenter,
             ITransactionRequestProcessor transactionRequestProcessor,
-            IHedgerTransactionPresenter hedgerTransactionPresenter)
+            IHedgerTransactionPresenter hedgerTransactionPresenter,
+            IConfiguration configuration)
         {
             _orderBookRetriever = orderBookRetriever;
             _cryptoExchangeCreator = cryptoExchangeCreator;
@@ -26,11 +31,15 @@ namespace Terminal
             _transactionRequestPresenter = transactionRequestPresenter;
             _transactionRequestProcessor = transactionRequestProcessor;
             _hedgerTransactionPresenter = hedgerTransactionPresenter;
+            _configuration = configuration;
         }
 
         public void Run()
         {
-            var orderBooks = _orderBookRetriever.RetrieveOrderBooks(2);
+            bool nrOrderBooksParsedSuccessfully = int.TryParse(_configuration["OrderBooks:NumeberOfOrderbooksToReadFromFile"], out var parsedNumberOfOrderbooksToRetrieve);
+            if (!nrOrderBooksParsedSuccessfully)
+                parsedNumberOfOrderbooksToRetrieve = 1;
+            var orderBooks = _orderBookRetriever.RetrieveOrderBooks(parsedNumberOfOrderbooksToRetrieve);
 
             var cryptoExchanges = _cryptoExchangeCreator.CreateCryptoExchangesFromMultipleOrderBooks(orderBooks);
             _cryptoExchangePresenter.OutputCryptoExchangesInfo(cryptoExchanges);
@@ -40,9 +49,16 @@ namespace Terminal
             {
                 _transactionRequestPresenter.DisplayTransactionRequestInfo(transactionRequest);
 
-                var hedgerTransactions = _transactionRequestProcessor.ProcessTransaction(transactionRequest, cryptoExchanges);
+                var processorResult = _transactionRequestProcessor.ProcessTransaction(transactionRequest, cryptoExchanges);
 
-                _hedgerTransactionPresenter.DisplayHedgerTransactions(hedgerTransactions);
+                if(processorResult.TransactionIsValid)
+                    _hedgerTransactionPresenter.DisplayHedgerTransactions(processorResult.HedgerTransactions);
+                else
+                {
+                    Console.WriteLine("#### Error message ##############################################");
+                    Console.WriteLine("Hedger transactions were not generated. Reason: " +
+                                      processorResult.ErrorMessage);
+                }
             }
         }
     }

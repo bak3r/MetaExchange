@@ -15,7 +15,7 @@ namespace Infrastructure.TransactionRequests
             _exchangeSelector = exchangeSelector;
             _askCombinationSelector = askCombinationSelector;
         }
-        public BuyRequestProcessorResult ProcessTransaction(TransactionRequest transactionRequest, List<CryptoExchange> cryptoExchanges)
+        public RequestProcessorResult ProcessTransaction(TransactionRequest transactionRequest, List<CryptoExchange> cryptoExchanges)
         {
             if (transactionRequest.TransactionAmount != 0)
             {
@@ -53,21 +53,21 @@ namespace Infrastructure.TransactionRequests
                             hedgerTransactions.Add(hedgerTransaction);
                         }
 
-                        return new BuyRequestProcessorResult()
+                        return new RequestProcessorResult()
                         { TransactionIsValid = true, HedgerTransactions = hedgerTransactions };
                     }
 
-                    return new BuyRequestProcessorResult()
+                    return new RequestProcessorResult()
                     {
                         TransactionIsValid = false,
                         ErrorMessage =
                             "List of Asks to complete transaction was null or empty or not enough asks exist to satisfy the requested amount."
                     };
                 }
-                return new BuyRequestProcessorResult()
+                return new RequestProcessorResult()
                 { TransactionIsValid = false, ErrorMessage = "No crypto exchange with enough balance exist." };
             }
-            return new BuyRequestProcessorResult()
+            return new RequestProcessorResult()
                 { TransactionIsValid = false, ErrorMessage = "Transaction amount must be larger than 0." };
 
         }

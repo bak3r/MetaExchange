@@ -2,14 +2,19 @@
 using System.IO;
 using Core.Implementations.DTOs;
 using Core.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace Infrastructure.OrderBookRetrieval
 {
     public class FileOrderBookRetriever : IOrderBookRetriever
     {
-        // for simplicity hardcoding the file with path
-        private string orderBooksFile = @"c:\temp\order_books_data.json";
+        public FileOrderBookRetriever(IConfiguration configuration)
+        {
+            _orderBooksFile = configuration["OrderBooks:OrderbooksFileWithPath"];
+        }
+
+        private readonly string _orderBooksFile;
 
         /// <summary>
         /// Retrieves multiple OrderBooks from file. Row timestamp is used as crypto exchange name for simplicity's sake.
@@ -23,7 +28,7 @@ namespace Infrastructure.OrderBookRetrieval
             int lineCounter = 0;
             string lineContent;
 
-            using (var reader = new StreamReader(orderBooksFile))
+            using (var reader = new StreamReader(_orderBooksFile))
             {
                 while (lineCounter < numberOfOrderBooksToRetrieve)
                 {

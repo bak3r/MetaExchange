@@ -6,7 +6,7 @@ namespace Infrastructure.TransactionRequests
 {
     public class SimpleSellTransactionRequestProcessor : ISellTransactionRequestProcessor
     {
-        public List<HedgerTransaction> ProcessTransaction(TransactionRequest transactionRequest, List<CryptoExchange> cryptoExchanges)
+        public RequestProcessorResult ProcessTransaction(TransactionRequest transactionRequest, List<CryptoExchange> cryptoExchanges)
         {
             throw new System.NotImplementedException();
         }

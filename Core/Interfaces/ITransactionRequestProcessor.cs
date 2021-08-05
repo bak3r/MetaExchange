@@ -5,6 +5,6 @@ namespace Core.Interfaces
 {
     public interface ITransactionRequestProcessor
     {
-        List<HedgerTransaction> ProcessTransaction(TransactionRequest transactionRequest, List<CryptoExchange> cryptoExchanges);
+        RequestProcessorResult ProcessTransaction(TransactionRequest transactionRequest, List<CryptoExchange> cryptoExchanges);
     }
 }

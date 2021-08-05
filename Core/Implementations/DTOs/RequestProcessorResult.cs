@@ -2,7 +2,7 @@
 
 namespace Core.Implementations.DTOs
 {
-    public class BuyRequestProcessorResult
+    public class RequestProcessorResult
     {
         public bool TransactionIsValid { get; set; }
         public List<HedgerTransaction> HedgerTransactions { get; set; }
