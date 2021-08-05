@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Core.Implementations.DTOs;
 using Core.Implementations.Enums;
 using Core.Interfaces;
@@ -22,8 +23,13 @@ namespace Infrastructure.TransactionRequests
         /// <returns>List containing a single transaction request.</returns>
         public List<TransactionRequest> RetrieveTransactionsForProcessing()
         {
+            // TODO: Expand functionality to read multiple transactions
+
             var transactionRequest = new TransactionRequest();
-            var transactionRequestAmountParsedSuccessfully = decimal.TryParse(_configuration["TransactionRequest:Amount"], out var parsedTransactionRequestAmount);
+            var transactionRequestAmountParsedSuccessfully = decimal.TryParse(
+                _configuration["TransactionRequest:Amount"], NumberStyles.Float,
+                CultureInfo.CreateSpecificCulture("en-GB"), out var parsedTransactionRequestAmount);
+
             if (transactionRequestAmountParsedSuccessfully)
                 transactionRequest.TransactionAmount = parsedTransactionRequestAmount;
 

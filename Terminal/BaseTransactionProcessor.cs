@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 
@@ -36,7 +35,10 @@ namespace Terminal
 
         public void Run()
         {
-            bool nrOrderBooksParsedSuccessfully = int.TryParse(_configuration["OrderBooks:NumeberOfOrderbooksToReadFromFile"], out var parsedNumberOfOrderbooksToRetrieve);
+            bool nrOrderBooksParsedSuccessfully =
+                int.TryParse(_configuration["OrderBooks:NumeberOfOrderbooksToReadFromFile"],
+                    out var parsedNumberOfOrderbooksToRetrieve);
+
             if (!nrOrderBooksParsedSuccessfully)
                 parsedNumberOfOrderbooksToRetrieve = 1;
             var orderBooks = _orderBookRetriever.RetrieveOrderBooks(parsedNumberOfOrderbooksToRetrieve);

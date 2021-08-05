@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Core.Implementations.DTOs;
-using Core.Implementations.Enums;
 using Core.Interfaces;
 using Infrastructure.TransactionRequests;
 using Moq;
