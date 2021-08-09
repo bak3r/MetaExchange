@@ -17,7 +17,7 @@ namespace Infrastructure.TransactionRequests
         }
         public RequestProcessorResult ProcessTransaction(TransactionRequest transactionRequest, List<CryptoExchange> cryptoExchanges)
         {
-            if (transactionRequest.TransactionAmount != 0)
+            if (transactionRequest.TransactionAmount > 0)
             {
                 var cryptoExchangesWithEnoughBalance = (from e in cryptoExchanges
                                                         where e.BalanceBtc >= transactionRequest.TransactionAmount

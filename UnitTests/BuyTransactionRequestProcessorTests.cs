@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Core.Implementations.DTOs;
+using Core.Implementations.Enums;
 using Core.Interfaces;
 using Infrastructure.TransactionRequests;
 using Moq;
@@ -16,6 +17,7 @@ namespace UnitTests
             var transactionProcessor = CreateSimpleBuyTransactionProcessor();
             var stubTransactionRequest = new TransactionRequest();
             stubTransactionRequest.TransactionAmount = 0m;
+            stubTransactionRequest.OrderType = OrderType.Buy;
             
             var result = transactionProcessor.ProcessTransaction(stubTransactionRequest, new List<CryptoExchange>());
 
