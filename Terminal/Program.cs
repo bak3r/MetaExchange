@@ -2,6 +2,7 @@
 using Core.Implementations;
 using Core.Interfaces;
 using Infrastructure.Asks;
+using Infrastructure.Bids;
 using Infrastructure.CryptoExchanges;
 using Infrastructure.HedgerTransactions;
 using Infrastructure.OrderBookRetrieval;
@@ -41,6 +42,7 @@ namespace Terminal
             services.AddTransient<IHedgerTransactionPresenter, TerminalHedgerTransactionPresenter>();
             services.AddTransient<IExchangeSelector, SimpleExchangeSelector>();
             services.AddTransient<IAskCombinationSelector, SimpleAskCombinationSelector>();
+            services.AddTransient<IBidCombinationSelector, SimpleBidCombinationSelector>();
             
 
             services.AddTransient<BaseTransactionProcessor>();

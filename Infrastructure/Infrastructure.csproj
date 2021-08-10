@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Folder Include="Asks\" />
+    <Folder Include="Bids\" />
   </ItemGroup>
 
 </Project>

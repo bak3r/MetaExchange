@@ -5,11 +5,28 @@ namespace Core.Implementations.DTOs
     public class Bid : IComparable
     {
         public Order Order { get; set; }
+
+        /// <summary>
+        /// Implements comparisson by price.
+        /// IMPORTANT NOTE !!! Reverse sort implemented - highest price first
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public int CompareTo(object? obj)
         {
             var otherBid = (Bid)obj;
-            if (this.Order.Price < otherBid.Order.Price) return -1;
-            if (this.Order.Price > otherBid.Order.Price) return 1;
+            if (otherBid.Order.Price < this.Order.Price) return -1;
+            if (otherBid.Order.Price > this.Order.Price) return 1;
+            if (otherBid.Order.Price == this.Order.Price)
+            {
+                // Prefer bids with largest amount so that number
+                // of buy transactions are kept to a minimum because
+                // of transaction fees
+                var otherBidMultiplication = otherBid.Order.Price * otherBid.Order.Amount;
+                var thisBidMultiplication = this.Order.Price * this.Order.Amount;
+                if (otherBidMultiplication < thisBidMultiplication) return -1;
+                if (otherBidMultiplication > thisBidMultiplication) return 1;
+            }
             return 0;
         }
     }

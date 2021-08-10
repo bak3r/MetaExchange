@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using Core.Implementations.DTOs;
 using Core.Interfaces;
 
@@ -8,6 +7,14 @@ namespace Infrastructure.TransactionRequests
 {
     public class SimpleSellTransactionRequestProcessor : ISellTransactionRequestProcessor
     {
+        private readonly IBidCombinationSelector _bidCombinationSelector;
+        private readonly IExchangeSelector _exchangeSelector;
+
+        public SimpleSellTransactionRequestProcessor(IBidCombinationSelector bidCombinationSelector, IExchangeSelector exchangeSelector)
+        {
+            _bidCombinationSelector = bidCombinationSelector;
+            _exchangeSelector = exchangeSelector;
+        }
         public RequestProcessorResult ProcessTransaction(TransactionRequest transactionRequest, List<CryptoExchange> cryptoExchanges)
         {
             if (transactionRequest.TransactionAmount > 0)
@@ -20,12 +27,39 @@ namespace Infrastructure.TransactionRequests
 
                     if (exchangesWithNonEmptyBidList.Count > 0)
                     {
-                        var dummyExchange = exchangesWithNonEmptyBidList[0];
+                        var tradableExchangesWithFilteredBidLists = new Dictionary<string, List<Bid>>();
 
-                        if (dummyExchange.OrderBook.Bids[0].Order.Amount >= transactionRequest.TransactionAmount)
+                        foreach (var cryptoExchange in exchangesWithNonEmptyBidList)
                         {
+                            var filteredBidListForCryptoExchange =
+                                _bidCombinationSelector.PrepareListOfBidsToSatisfyTransactionAmount(
+                                    transactionRequest.TransactionAmount, cryptoExchange.OrderBook.Bids);
+                            if (filteredBidListForCryptoExchange != null)
+                                tradableExchangesWithFilteredBidLists.Add(cryptoExchange.Name,
+                                    filteredBidListForCryptoExchange);
+                        }
+
+                        var (selectedCryptoExchangeName, listOfNeededAsksToCompleteTransaction) =
+                            _exchangeSelector.FindExchangeWithHighestPossibleBidTransactionValue(
+                                tradableExchangesWithFilteredBidLists);
+
+                        if (listOfNeededAsksToCompleteTransaction != null &&
+                            listOfNeededAsksToCompleteTransaction.Any())
+                        {
+                            var hedgerTransactions = new List<HedgerTransaction>();
+
+                            foreach (var singleBid in listOfNeededAsksToCompleteTransaction)
+                            {
+                                var hedgerTransaction = new HedgerTransaction()
+                                {
+                                    CryptoExchange = selectedCryptoExchangeName,
+                                    Order = singleBid.Order
+                                };
+                                hedgerTransactions.Add(hedgerTransaction);
+                            }
+
                             return new RequestProcessorResult()
-                                { TransactionIsValid = true };
+                                { TransactionIsValid = true, HedgerTransactions = hedgerTransactions };
                         }
 
                         return new RequestProcessorResult()
@@ -45,6 +79,5 @@ namespace Infrastructure.TransactionRequests
             return new RequestProcessorResult()
                 {TransactionIsValid = false, ErrorMessage = "Transaction amount must be larger than 0."};
         }
-        
     }
 }

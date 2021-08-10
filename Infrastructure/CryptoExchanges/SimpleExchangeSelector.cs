@@ -41,5 +41,40 @@ namespace Infrastructure.CryptoExchanges
 
             return (null, null);
         }
+
+        public (string, List<Bid>) FindExchangeWithHighestPossibleBidTransactionValue(Dictionary<string, List<Bid>> tradeableExchangesWithSelectedBids)
+        {
+            var exchangesWithTransactionCostSum = new List<KeyValuePair<string, decimal>>();
+
+            foreach (var singleExchangeWithBids in tradeableExchangesWithSelectedBids)
+            {
+                decimal exchangeBidSumCost = new decimal();
+                foreach (var bid in singleExchangeWithBids.Value)
+                {
+                    var singleBidSumCost = bid.Order.Amount * bid.Order.Price;
+                    exchangeBidSumCost += singleBidSumCost;
+                }
+
+                if (exchangeBidSumCost > 0)
+                {
+                    exchangesWithTransactionCostSum.Add(
+                        new KeyValuePair<string, decimal>(singleExchangeWithBids.Key, exchangeBidSumCost));
+                }
+            }
+
+            exchangesWithTransactionCostSum.Sort(
+                delegate (KeyValuePair<string, decimal> firstPair, KeyValuePair<string, decimal> secondPair)
+                {
+                    return secondPair.Value.CompareTo(firstPair.Value);
+                });
+
+            if (exchangesWithTransactionCostSum.Any())
+            {
+                return (exchangesWithTransactionCostSum[0].Key,
+                    tradeableExchangesWithSelectedBids[exchangesWithTransactionCostSum[0].Key]);
+            }
+
+            return (null, null);
+        }
     }
 }

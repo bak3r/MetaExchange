@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Core.Implementations.DTOs;
+using Core.Interfaces;
 using Infrastructure.Asks;
 using NUnit.Framework;
 
@@ -11,9 +12,10 @@ namespace UnitTests
         [Test]
         public void T01_PrepareListOfAsksToSatisfyTransactionAmount_RequestedBitcoinAmountIsZero_NullIsReturned()
         {
-            var simpleAskCombinationSelector = CreateSimpleAskCombinationSelector();
+            var simpleAskCombinationSelector = CreateAskCombinationSelector();
 
             var result = simpleAskCombinationSelector.PrepareListOfAsksToSatisfyTransactionAmount(0, new List<Ask>());
+            
 
             Assert.IsNull(result);
         }
@@ -21,7 +23,7 @@ namespace UnitTests
         [Test]
         public void T02_PrepareListOfAsksToSatisfyTransactionAmount_OrderBookAsksListIsEmpty_NullIsReturned()
         {
-            var simpleAskCombinationSelector = CreateSimpleAskCombinationSelector();
+            var simpleAskCombinationSelector = CreateAskCombinationSelector();
 
             var result = simpleAskCombinationSelector.PrepareListOfAsksToSatisfyTransactionAmount(1, new List<Ask>());
 
@@ -33,7 +35,7 @@ namespace UnitTests
         [TestCase(8.39372)]
         public void T03_PrepareListOfAsksToSatisfyTransactionAmount_RequestedBitcoinAmountIsLowerThanSumFromOneAvailableAsk_NonEmptyListIsReturned(decimal requestedBitcoinAmount)
         {
-            var simpleAskCombinationSelector = CreateSimpleAskCombinationSelector();
+            var simpleAskCombinationSelector = CreateAskCombinationSelector();
             var stubListOfAsks = new List<Ask>();
             var stubAsk1 = new Ask { Order = new Order() { Amount = 15m, Price = 1m } };
             stubListOfAsks.Add(stubAsk1);
@@ -47,7 +49,7 @@ namespace UnitTests
         [TestCase(2.9)]
         public void T04_PrepareListOfAsksToSatisfyTransactionAmount_RequestedBitcoinAmountIsLowerThanSumFromMultipleAsks_NonEmptyListIsReturned(decimal requestedBitcoinAmount)
         {
-            var simpleAskCombinationSelector = CreateSimpleAskCombinationSelector();
+            var simpleAskCombinationSelector = CreateAskCombinationSelector();
             var stubListOfAsks = new List<Ask>();
             var stubAsk1 = new Ask { Order = new Order() { Amount = 1m, Price = 1m } };
             var stubAsk2 = new Ask { Order = new Order() { Amount = 2m, Price = 1m } };
@@ -63,7 +65,7 @@ namespace UnitTests
         [TestCase(1111.9999)]
         public void T05_PrepareListOfAsksToSatisfyTransactionAmount_RequestedBitcoinAmountIsHigherThanSumFromMultipleAsks_NullIsReturned(decimal requestedBitcoinAmount)
         {
-            var simpleAskCombinationSelector = CreateSimpleAskCombinationSelector();
+            var simpleAskCombinationSelector = CreateAskCombinationSelector();
             var stubListOfAsks = new List<Ask>();
             var stubAsk1 = new Ask { Order = new Order() { Amount = 1m, Price = 1m } };
             var stubAsk2 = new Ask { Order = new Order() { Amount = 2m, Price = 1m } };
@@ -77,7 +79,7 @@ namespace UnitTests
         [Test]
         public void T06_PrepareListOfAsksToSatisfyTransactionAmount_TwoAsksWithSufficientAmountExist_TheOneWithLowerPriceIsReturnedInList()
         {
-            var simpleAskCombinationSelector = CreateSimpleAskCombinationSelector();
+            var simpleAskCombinationSelector = CreateAskCombinationSelector();
             var stubListOfAsks = new List<Ask>();
             var stubAsk1 = new Ask { Order = new Order() { Amount = 1m, Price = 1m } };
             var stubAsk2 = new Ask { Order = new Order() { Amount = 1m, Price = 2m } };
@@ -92,7 +94,7 @@ namespace UnitTests
         [Test]
         public void T07_PrepareListOfAsksToSatisfyTransactionAmount_TwoAsksWithSufficientAmountAndSamePriceExist_OnlyOneIsReturnedInList()
         {
-            var simpleAskCombinationSelector = CreateSimpleAskCombinationSelector();
+            var simpleAskCombinationSelector = CreateAskCombinationSelector();
             var stubListOfAsks = new List<Ask>();
             var stubAsk1 = new Ask { Order = new Order() { Amount = 1m, Price = 1m } };
             var stubAsk2 = new Ask { Order = new Order() { Amount = 1m, Price = 1m } };
@@ -108,7 +110,7 @@ namespace UnitTests
         [Test]
         public void T08_PrepareListOfAsksToSatisfyTransactionAmount_HigherAmountWithLowerPriceAskExists_TheLowerPricedAskIsSelected()
         {
-            var simpleAskCombinationSelector = CreateSimpleAskCombinationSelector();
+            var simpleAskCombinationSelector = CreateAskCombinationSelector();
             var stubListOfAsks = new List<Ask>();
             var stubAsk1 = new Ask { Order = new Order() { Amount = 0.5m, Price = 1m } };
             var stubAsk2 = new Ask { Order = new Order() { Amount = 3m, Price = 3m } };
@@ -125,10 +127,10 @@ namespace UnitTests
 
         #region HelperMethods
 
-        private SimpleAskCombinationSelector CreateSimpleAskCombinationSelector()
+        private IAskCombinationSelector CreateAskCombinationSelector()
         {
-            var simpleAskCombinationSelector = new SimpleAskCombinationSelector();
-            return simpleAskCombinationSelector;
+            var askCombinationSelector = new SimpleAskCombinationSelector();
+            return askCombinationSelector;
         }
 
         #endregion
