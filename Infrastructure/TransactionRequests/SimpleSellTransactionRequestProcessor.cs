@@ -5,6 +5,11 @@ using Core.Interfaces;
 
 namespace Infrastructure.TransactionRequests
 {
+    /// <summary>
+    /// Simple implementation of sell transaction processor. Main business logic for
+    /// processing sell transactions is implemented here with a few details
+    /// delegated to other services.
+    /// </summary>
     public class SimpleSellTransactionRequestProcessor : ISellTransactionRequestProcessor
     {
         private readonly IBidCombinationSelector _bidCombinationSelector;
@@ -15,6 +20,13 @@ namespace Infrastructure.TransactionRequests
             _bidCombinationSelector = bidCombinationSelector;
             _exchangeSelector = exchangeSelector;
         }
+
+        /// <summary>
+        /// Entry point for each sell transaction processing.
+        /// </summary>
+        /// <param name="transactionRequest">DTO with requested transaction details</param>
+        /// <param name="cryptoExchanges">List of all crypto exchanges</param>
+        /// <returns>RequestProcessorResult DTO with hedger transactions and error status</returns>
         public RequestProcessorResult ProcessTransaction(TransactionRequest transactionRequest, List<CryptoExchange> cryptoExchanges)
         {
             if (transactionRequest.TransactionAmount > 0)

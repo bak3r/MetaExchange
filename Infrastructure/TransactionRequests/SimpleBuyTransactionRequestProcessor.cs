@@ -5,6 +5,11 @@ using Core.Interfaces;
 
 namespace Infrastructure.TransactionRequests
 {
+    /// <summary>
+    /// Simple implementation of buy transaction processor. Main business logic for
+    /// processing buy transactions is implemented here with a few details
+    /// delegated to other services.
+    /// </summary>
     public class SimpleBuyTransactionRequestProcessor : IBuyTransactionRequestProcessor
     {
         private readonly IExchangeSelector _exchangeSelector;
@@ -15,6 +20,13 @@ namespace Infrastructure.TransactionRequests
             _exchangeSelector = exchangeSelector;
             _askCombinationSelector = askCombinationSelector;
         }
+
+        /// <summary>
+        /// Entry point for each buy transaction processing.
+        /// </summary>
+        /// <param name="transactionRequest">DTO with requested transaction details</param>
+        /// <param name="cryptoExchanges">List of all crypto exchanges</param>
+        /// <returns>RequestProcessorResult DTO with hedger transactions and error status</returns>
         public RequestProcessorResult ProcessTransaction(TransactionRequest transactionRequest, List<CryptoExchange> cryptoExchanges)
         {
             if (transactionRequest.TransactionAmount > 0)

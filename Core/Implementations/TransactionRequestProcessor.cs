@@ -5,6 +5,10 @@ using Core.Interfaces;
 
 namespace Core.Implementations
 {
+    /// <summary>
+    /// Wrapper for processing transaction requests. Implementations reside in respective
+    /// implementations of IBuyTransactionRequestProcessor and ISellTransactionRequestProcessor
+    /// </summary>
     public class TransactionRequestProcessor : ITransactionRequestProcessor
     {
         private readonly IBuyTransactionRequestProcessor _buyTransactionRequestProcessor;
