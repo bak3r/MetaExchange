@@ -39,16 +39,16 @@ namespace Infrastructure.TransactionRequests
                                     filteredBidListForCryptoExchange);
                         }
 
-                        var (selectedCryptoExchangeName, listOfNeededAsksToCompleteTransaction) =
+                        var (selectedCryptoExchangeName, listOfNeededBidsToCompleteTransaction) =
                             _exchangeSelector.FindExchangeWithHighestPossibleBidTransactionValue(
                                 tradableExchangesWithFilteredBidLists);
 
-                        if (listOfNeededAsksToCompleteTransaction != null &&
-                            listOfNeededAsksToCompleteTransaction.Any())
+                        if (listOfNeededBidsToCompleteTransaction != null &&
+                            listOfNeededBidsToCompleteTransaction.Any())
                         {
                             var hedgerTransactions = new List<HedgerTransaction>();
 
-                            foreach (var singleBid in listOfNeededAsksToCompleteTransaction)
+                            foreach (var singleBid in listOfNeededBidsToCompleteTransaction)
                             {
                                 var hedgerTransaction = new HedgerTransaction()
                                 {
