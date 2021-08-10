@@ -146,7 +146,7 @@ namespace UnitTests
         }
 
         [Test]
-        public void T07_ProcessTransaction_OneExchangeMultipleAsksThatTogetherSatisfyTransactionAmount_HedgerTransactionsAreReturnedInResult()
+        public void T07_ProcessTransaction_OneExchangeMultipleBidsThatTogetherSatisfyTransactionAmount_HedgerTransactionsAreReturnedInResult()
         {
             var sellTransactionRequestProcessor = CreateSellTransactionRequestProcessor();
             var stubTransactionRequest = new TransactionRequest { TransactionAmount = 30m, OrderType = OrderType.Sell };

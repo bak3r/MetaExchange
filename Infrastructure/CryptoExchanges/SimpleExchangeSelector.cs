@@ -5,8 +5,21 @@ using Core.Interfaces;
 
 namespace Infrastructure.CryptoExchanges
 {
+
+    /// <summary>
+    /// Simple exchange selector based on prepared asks/bids. Its job is to select
+    /// the best exchange where the transaction should be processed. It is very simple
+    /// and does not take into account the transaction fees.
+    /// </summary>
     public class SimpleExchangeSelector : IExchangeSelector
     {
+        /// <summary>
+        /// Searches through the dictionary of exchange names with list of asks pertaining
+        /// each exchangeName as value. From all the exchanges it returns the best exchange
+        /// and asks required to make the BUY transaction on.
+        /// </summary>
+        /// <param name="tradableExchangesWithFilteredAskLists">Dictionary of exchangeNames with selected list of asks</param>
+        /// <returns>Tuple of exchangeName and selected asks</returns>
         public (string, List<Ask>) FindExchangeWithLowestPossibleAskTransactionCost(Dictionary<string, List<Ask>> tradableExchangesWithFilteredAskLists)
         {
             var exchangesWithTransactionCostSum = new List<KeyValuePair<string, decimal>>();
@@ -42,6 +55,13 @@ namespace Infrastructure.CryptoExchanges
             return (null, null);
         }
 
+        /// <summary>
+        /// Searches through the dictionary of exchange names with list of bids pertaining
+        /// each exchangeName as value. From all the exchanges it returns the best exchange
+        /// and bids required to make the SELL transaction on.
+        /// </summary>
+        /// <param name="tradeableExchangesWithSelectedBids">Dictionary of exchangeNames with selected list of bids</param>
+        /// <returns>Tuple of exchangeName and selected bids</returns>
         public (string, List<Bid>) FindExchangeWithHighestPossibleBidTransactionValue(Dictionary<string, List<Bid>> tradeableExchangesWithSelectedBids)
         {
             var exchangesWithTransactionCostSum = new List<KeyValuePair<string, decimal>>();
