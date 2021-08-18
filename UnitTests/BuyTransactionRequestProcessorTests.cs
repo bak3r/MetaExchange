@@ -85,8 +85,7 @@ namespace UnitTests
             stubCryptoExchanges.Add(stubCryptoExchange);
 
             var stubAskList2 = new List<Ask> {new Ask() {Order = new Order() {Amount = 1m, Price = 1m}}};
-            AskCombinationSelectorMock
-                .Setup(x => x.PrepareListOfAsksToSatisfyTransactionAmount(transactionAmount, stubAskList))
+            CombinationSelectorMock.Setup(x => x.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(transactionAmount, stubAskList))
                 .Returns(stubAskList2);
 
             var stubDictionary = new Dictionary<string, List<Ask>> {{stubCryptoExchangeName, stubAskList2}};
@@ -120,8 +119,7 @@ namespace UnitTests
             stubCryptoExchanges.Add(stubCryptoExchange);
 
             var mockReturnedAskList = new List<Ask> { stubAsk1, stubAsk2 };
-            AskCombinationSelectorMock
-                .Setup(x => x.PrepareListOfAsksToSatisfyTransactionAmount(transactionAmount, stubAskList))
+            CombinationSelectorMock.Setup(x => x.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(transactionAmount, stubAskList))
                 .Returns(mockReturnedAskList);
 
             var stubDictionary = new Dictionary<string, List<Ask>> { { stubCryptoExchangeName, mockReturnedAskList } };
@@ -166,11 +164,10 @@ namespace UnitTests
 
             var mockReturnedAskList1 = new List<Ask> { stubExchange1Ask1, stubExchange1Ask2 };
             var mockReturnedAskList2 = new List<Ask> { stubExchange2Ask1, new Ask(){Order = new Order(){Amount = 1.5m, Price = 1m}} };
-            AskCombinationSelectorMock
-                .Setup(x => x.PrepareListOfAsksToSatisfyTransactionAmount(transactionAmount, stubAskList1))
+
+            CombinationSelectorMock.Setup(x => x.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(transactionAmount, stubAskList1))
                 .Returns(mockReturnedAskList1);
-            AskCombinationSelectorMock
-                .Setup(x => x.PrepareListOfAsksToSatisfyTransactionAmount(transactionAmount, stubAskList2))
+            CombinationSelectorMock.Setup(x => x.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(transactionAmount, stubAskList2))
                 .Returns(mockReturnedAskList2);
 
             var stubDictionary = new Dictionary<string, List<Ask>>
@@ -197,20 +194,22 @@ namespace UnitTests
 
 
         private Mock<IExchangeSelector> ExchangeSelectorMock { get; set; }
-        private Mock<IAskCombinationSelector> AskCombinationSelectorMock { get; set; }
+        public Mock<ICombinationSelector<Ask>> CombinationSelectorMock { get; set; }
 
         #region HelperMethods
         [SetUp]
         public void SetUp()
         {
             ExchangeSelectorMock = new Mock<IExchangeSelector>();
-            AskCombinationSelectorMock = new Mock<IAskCombinationSelector>();
+            CombinationSelectorMock = new Mock<ICombinationSelector<Ask>>();
         }
+
+
         public SimpleBuyTransactionRequestProcessor CreateSimpleBuyTransactionProcessor()
         {
             var simpleBuyTransactionRequestProcessor =
                 new SimpleBuyTransactionRequestProcessor(ExchangeSelectorMock.Object,
-                    AskCombinationSelectorMock.Object);
+                    CombinationSelectorMock.Object);
             return simpleBuyTransactionRequestProcessor;
         }
         #endregion

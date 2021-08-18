@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Terminal
 {
-    public class BaseTransactionProcessor
+    public class MetaExchangeCoordinator
     {
         private readonly IOrderBookRetriever _orderBookRetriever;
         private readonly ICryptoExchangeCreator _cryptoExchangeCreator;
@@ -15,7 +15,7 @@ namespace Terminal
         private readonly IHedgerTransactionPresenter _hedgerTransactionPresenter;
         private readonly IConfiguration _configuration;
 
-        public BaseTransactionProcessor(IOrderBookRetriever orderBookRetriever,
+        public MetaExchangeCoordinator(IOrderBookRetriever orderBookRetriever,
             ICryptoExchangeCreator cryptoExchangeCreator, ICryptoExchangePresenter cryptoExchangePresenter,
             ITransactionRequestRetriever transactionRequestRetriever,
             ITransactionRequestPresenter transactionRequestPresenter,

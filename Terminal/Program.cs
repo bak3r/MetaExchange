@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Core.Implementations;
+using Core.Implementations.DTOs;
 using Core.Interfaces;
-using Infrastructure.Asks;
-using Infrastructure.Bids;
+using Infrastructure;
 using Infrastructure.CryptoExchanges;
 using Infrastructure.HedgerTransactions;
 using Infrastructure.OrderBookRetrieval;
@@ -20,7 +20,7 @@ namespace Terminal
             ConfigureServices(services);
 
             var serviceProvider = services.BuildServiceProvider();
-            serviceProvider.GetService<BaseTransactionProcessor>().Run();
+            serviceProvider.GetService<MetaExchangeCoordinator>().Run();
             serviceProvider.Dispose();
         }
 
@@ -41,11 +41,11 @@ namespace Terminal
             services.AddTransient<ISellTransactionRequestProcessor, SimpleSellTransactionRequestProcessor>();
             services.AddTransient<IHedgerTransactionPresenter, TerminalHedgerTransactionPresenter>();
             services.AddTransient<IExchangeSelector, SimpleExchangeSelector>();
-            services.AddTransient<IAskCombinationSelector, SimpleAskCombinationSelector>();
-            services.AddTransient<IBidCombinationSelector, SimpleBidCombinationSelector>();
+            services.AddTransient<ICombinationSelector<Ask>, CombinationSelector<Ask>>();
+            services.AddTransient<ICombinationSelector<Bid>, CombinationSelector<Bid>>();
             
 
-            services.AddTransient<BaseTransactionProcessor>();
+            services.AddTransient<MetaExchangeCoordinator>();
         }
     }
 }

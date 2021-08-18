@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Core.Implementations.DTOs;
 using Core.Interfaces;
-using Infrastructure.Asks;
+using Infrastructure;
 using NUnit.Framework;
 
 namespace UnitTests
@@ -14,7 +14,7 @@ namespace UnitTests
         {
             var simpleAskCombinationSelector = CreateAskCombinationSelector();
 
-            var result = simpleAskCombinationSelector.PrepareListOfAsksToSatisfyTransactionAmount(0, new List<Ask>());
+            var result = simpleAskCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(0, new List<Ask>());
             
 
             Assert.IsNull(result);
@@ -25,7 +25,7 @@ namespace UnitTests
         {
             var simpleAskCombinationSelector = CreateAskCombinationSelector();
 
-            var result = simpleAskCombinationSelector.PrepareListOfAsksToSatisfyTransactionAmount(1, new List<Ask>());
+            var result = simpleAskCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(1, new List<Ask>());
 
             Assert.IsNull(result);
         }
@@ -39,7 +39,7 @@ namespace UnitTests
             var stubListOfAsks = new List<Ask>();
             var stubAsk1 = new Ask { Order = new Order() { Amount = 15m, Price = 1m } };
             stubListOfAsks.Add(stubAsk1);
-            var result = simpleAskCombinationSelector.PrepareListOfAsksToSatisfyTransactionAmount(requestedBitcoinAmount, stubListOfAsks);
+            var result = simpleAskCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(requestedBitcoinAmount, stubListOfAsks);
 
             Assert.IsNotEmpty(result);
         }
@@ -55,7 +55,7 @@ namespace UnitTests
             var stubAsk2 = new Ask { Order = new Order() { Amount = 2m, Price = 1m } };
             stubListOfAsks.Add(stubAsk1);
             stubListOfAsks.Add(stubAsk2);
-            var result = simpleAskCombinationSelector.PrepareListOfAsksToSatisfyTransactionAmount(requestedBitcoinAmount, stubListOfAsks);
+            var result = simpleAskCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(requestedBitcoinAmount, stubListOfAsks);
 
             Assert.IsNotEmpty(result);
         }
@@ -71,7 +71,7 @@ namespace UnitTests
             var stubAsk2 = new Ask { Order = new Order() { Amount = 2m, Price = 1m } };
             stubListOfAsks.Add(stubAsk1);
             stubListOfAsks.Add(stubAsk2);
-            var result = simpleAskCombinationSelector.PrepareListOfAsksToSatisfyTransactionAmount(requestedBitcoinAmount, stubListOfAsks);
+            var result = simpleAskCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(requestedBitcoinAmount, stubListOfAsks);
 
             Assert.IsNull(result);
         }
@@ -85,7 +85,7 @@ namespace UnitTests
             var stubAsk2 = new Ask { Order = new Order() { Amount = 1m, Price = 2m } };
             stubListOfAsks.Add(stubAsk1);
             stubListOfAsks.Add(stubAsk2);
-            var result = simpleAskCombinationSelector.PrepareListOfAsksToSatisfyTransactionAmount(1m, stubListOfAsks);
+            var result = simpleAskCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(1m, stubListOfAsks);
 
             Assert.IsTrue(result[0].Order.Price == 1m);
             Assert.IsTrue(result[0].Order.Amount == 1m);
@@ -100,7 +100,7 @@ namespace UnitTests
             var stubAsk2 = new Ask { Order = new Order() { Amount = 1m, Price = 1m } };
             stubListOfAsks.Add(stubAsk1);
             stubListOfAsks.Add(stubAsk2);
-            var result = simpleAskCombinationSelector.PrepareListOfAsksToSatisfyTransactionAmount(1m, stubListOfAsks);
+            var result = simpleAskCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(1m, stubListOfAsks);
 
             Assert.IsTrue(result.Count == 1);
             Assert.IsTrue(result[0].Order.Price == 1m);
@@ -118,7 +118,7 @@ namespace UnitTests
             stubListOfAsks.Add(stubAsk1);
             stubListOfAsks.Add(stubAsk2);
             stubListOfAsks.Add(stubAsk3);
-            var result = simpleAskCombinationSelector.PrepareListOfAsksToSatisfyTransactionAmount(1m, stubListOfAsks);
+            var result = simpleAskCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(1m, stubListOfAsks);
 
             Assert.IsTrue(result.Count == 1);
             Assert.IsTrue(result[0].Order.Price == 0.5m);
@@ -127,9 +127,9 @@ namespace UnitTests
 
         #region HelperMethods
 
-        private IAskCombinationSelector CreateAskCombinationSelector()
+        private ICombinationSelector<Ask> CreateAskCombinationSelector()
         {
-            var askCombinationSelector = new SimpleAskCombinationSelector();
+            var askCombinationSelector = new CombinationSelector<Ask>();
             return askCombinationSelector;
         }
 

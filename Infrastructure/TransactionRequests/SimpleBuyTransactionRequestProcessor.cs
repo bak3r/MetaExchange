@@ -13,12 +13,12 @@ namespace Infrastructure.TransactionRequests
     public class SimpleBuyTransactionRequestProcessor : IBuyTransactionRequestProcessor
     {
         private readonly IExchangeSelector _exchangeSelector;
-        private readonly IAskCombinationSelector _askCombinationSelector;
+        private readonly ICombinationSelector<Ask> _combinationSelector;
 
-        public SimpleBuyTransactionRequestProcessor(IExchangeSelector exchangeSelector, IAskCombinationSelector askCombinationSelector)
+        public SimpleBuyTransactionRequestProcessor(IExchangeSelector exchangeSelector, ICombinationSelector<Ask> combinationSelector)
         {
             _exchangeSelector = exchangeSelector;
-            _askCombinationSelector = askCombinationSelector;
+            _combinationSelector = combinationSelector;
         }
 
         /// <summary>
@@ -41,8 +41,9 @@ namespace Infrastructure.TransactionRequests
 
                     foreach (var cryptoExchange in cryptoExchangesWithEnoughBalance)
                     {
-                        var filteredAskListForCryptoExchange = _askCombinationSelector.PrepareListOfAsksToSatisfyTransactionAmount(
-                            transactionRequest.TransactionAmount, cryptoExchange.OrderBook.Asks);
+                        var filteredAskListForCryptoExchange =
+                            _combinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(
+                                transactionRequest.TransactionAmount, cryptoExchange.OrderBook.Asks);
                         if (filteredAskListForCryptoExchange != null)
                             tradeableExchangesWithFilteredAskLists.Add(cryptoExchange.Name, filteredAskListForCryptoExchange);
                     }

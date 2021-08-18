@@ -13,9 +13,4 @@
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Asks\" />
-    <Folder Include="Bids\" />
-  </ItemGroup>
-
 </Project>

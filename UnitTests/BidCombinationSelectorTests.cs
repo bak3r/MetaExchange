@@ -1,20 +1,20 @@
 ﻿using System.Collections.Generic;
 using Core.Implementations.DTOs;
 using Core.Interfaces;
-using Infrastructure.Bids;
+using Infrastructure;
 using NUnit.Framework;
 
 namespace UnitTests
 {
     [TestFixture]
-    public class BidCombinatonSelectorTests
+    public class BidCombinationSelectorTests
     {
         [Test]
         public void T01_PrepareListOfBidsToSatisfyTransactionAmount_RequestedBitcoinAmountIsZero_NullIsReturned()
         {
             var bidCombinationSelector = CreateBidCombinationSelector();
 
-            var result = bidCombinationSelector.PrepareListOfBidsToSatisfyTransactionAmount(0m, new List<Bid>());
+            var result = bidCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(0m, new List<Bid>());
 
             Assert.IsNull(result);
         }
@@ -27,7 +27,7 @@ namespace UnitTests
             var stubEmptyListOfBids = new List<Bid>();
             var stubTransactionRequestAmount = 1m;
             var result =
-                bidCombinationSelector.PrepareListOfBidsToSatisfyTransactionAmount(stubTransactionRequestAmount,
+                bidCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(stubTransactionRequestAmount,
                     stubEmptyListOfBids);
 
             Assert.IsNull(result);
@@ -43,7 +43,7 @@ namespace UnitTests
             var stubBid1 = new Bid { Order = new Order() { Amount = 400m, Price = 1m } };
             stubListOfBids.Add(stubBid1);
             var result =
-                bidCombinationSelector.PrepareListOfBidsToSatisfyTransactionAmount(requestedBitcoinAmount,
+                bidCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(requestedBitcoinAmount,
                     stubListOfBids);
 
             Assert.IsNotEmpty(result);
@@ -61,7 +61,7 @@ namespace UnitTests
             stubListOfBids.Add(stubBid1);
             stubListOfBids.Add(stubBid2);
             var result =
-                bidCombinationSelector.PrepareListOfBidsToSatisfyTransactionAmount(requestedBitcoinAmount,
+                bidCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(requestedBitcoinAmount,
                     stubListOfBids);
 
             Assert.IsNotEmpty(result);
@@ -79,7 +79,7 @@ namespace UnitTests
             stubListOfBids.Add(stubBid1);
             stubListOfBids.Add(stubBid2);
             var result =
-                bidCombinationSelector.PrepareListOfBidsToSatisfyTransactionAmount(requestedBitcoinAmount,
+                bidCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(requestedBitcoinAmount,
                     stubListOfBids);
 
             Assert.IsNull(result);
@@ -97,7 +97,7 @@ namespace UnitTests
             stubListOfBids.Add(stubBid2);
             var stubTransactionRequestAmount = 1m;
             var result =
-                bidCombinationSelector.PrepareListOfBidsToSatisfyTransactionAmount(stubTransactionRequestAmount,
+                bidCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(stubTransactionRequestAmount,
                     stubListOfBids);
 
             Assert.IsTrue(result[0].Order.Price == 2m);
@@ -116,7 +116,7 @@ namespace UnitTests
             stubListOfBids.Add(stubBid2);
             var stubTransactionRequestAmount = 1m;
             var result =
-                bidCombinationSelector.PrepareListOfBidsToSatisfyTransactionAmount(stubTransactionRequestAmount,
+                bidCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(stubTransactionRequestAmount,
                     stubListOfBids);
 
             Assert.IsTrue(result.Count == 1);
@@ -138,7 +138,7 @@ namespace UnitTests
             stubListOfBids.Add(stubBid3);
             var stubTransactionRequestAmount = 1m;
             var result =
-                bidCombinationSelector.PrepareListOfBidsToSatisfyTransactionAmount(stubTransactionRequestAmount,
+                bidCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(stubTransactionRequestAmount,
                     stubListOfBids);
 
             Assert.IsTrue(result.Count == 1);
@@ -164,7 +164,7 @@ namespace UnitTests
             stubListOfBids.Add(stubBid5);
             var stubTransactionRequestAmount = 2m;
             var result =
-                bidCombinationSelector.PrepareListOfBidsToSatisfyTransactionAmount(stubTransactionRequestAmount,
+                bidCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(stubTransactionRequestAmount,
                     stubListOfBids);
 
             Assert.IsTrue(result.Count == 1);
@@ -174,9 +174,9 @@ namespace UnitTests
 
         #region HelperMethods
 
-        private IBidCombinationSelector CreateBidCombinationSelector()
+        private ICombinationSelector<Bid> CreateBidCombinationSelector()
         {
-            var bidCombinationSelector = new SimpleBidCombinationSelector();
+            var bidCombinationSelector = new CombinationSelector<Bid>();
             return bidCombinationSelector;
         }
 
