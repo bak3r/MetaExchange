@@ -2,10 +2,10 @@
 
 namespace Core.Implementations.DTOs
 {
-    public class Bid : BidOrOrderElement, IComparable
+    public class Bid : BidOrAskElement, IComparable
     {
         /// <summary>
-        /// Implements comparisson by price.
+        /// Implements comparison by price.
         /// IMPORTANT NOTE !!! Reverse sort implemented - highest price first
         /// </summary>
         /// <param name="obj"></param>

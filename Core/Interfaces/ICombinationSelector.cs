@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using Core.Implementations.DTOs;
 
 namespace Core.Interfaces
 {
     public interface ICombinationSelector<T>
     {
-        List<T> PrepareListOfBidsOrAsksToSatisfyTransactionAmount(decimal transactionRequestAmount,
+        List<BidOrAskElement> PrepareListOfBidsOrAsksToSatisfyTransactionAmount(decimal transactionRequestAmount,
             List<T> orderBookBidsOrAsks);
+
     }
 }

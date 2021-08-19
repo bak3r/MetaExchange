@@ -2,6 +2,7 @@
 using Core.Implementations.DTOs;
 using Core.Interfaces;
 using Infrastructure;
+using Moq;
 using NUnit.Framework;
 
 namespace UnitTests
@@ -37,8 +38,11 @@ namespace UnitTests
         {
             var simpleAskCombinationSelector = CreateAskCombinationSelector();
             var stubListOfAsks = new List<Ask>();
-            var stubAsk1 = new Ask { Order = new Order() { Amount = 15m, Price = 1m } };
+            var stubAsk1 = new Ask { Order = new Order() { Amount = 15m, Price = 1m, Type = stubAskType} };
             stubListOfAsks.Add(stubAsk1);
+            var stubHigherBalanceThanRequestedAmount = 500m;
+            ExchangeBalanceTrackerMock.Setup(x => x.GetBalanceForExchange(It.IsAny<string>())).Returns(stubHigherBalanceThanRequestedAmount);
+
             var result = simpleAskCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(requestedBitcoinAmount, stubListOfAsks);
 
             Assert.IsNotEmpty(result);
@@ -51,10 +55,13 @@ namespace UnitTests
         {
             var simpleAskCombinationSelector = CreateAskCombinationSelector();
             var stubListOfAsks = new List<Ask>();
-            var stubAsk1 = new Ask { Order = new Order() { Amount = 1m, Price = 1m } };
-            var stubAsk2 = new Ask { Order = new Order() { Amount = 2m, Price = 1m } };
+            var stubAsk1 = new Ask { Order = new Order() { Amount = 1m, Price = 1m, Type = stubAskType } };
+            var stubAsk2 = new Ask { Order = new Order() { Amount = 2m, Price = 1m, Type = stubAskType } };
             stubListOfAsks.Add(stubAsk1);
             stubListOfAsks.Add(stubAsk2);
+            var stubHigherBalanceThanRequestedAmount = 500m;
+            ExchangeBalanceTrackerMock.Setup(x => x.GetBalanceForExchange(It.IsAny<string>())).Returns(stubHigherBalanceThanRequestedAmount);
+
             var result = simpleAskCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(requestedBitcoinAmount, stubListOfAsks);
 
             Assert.IsNotEmpty(result);
@@ -67,10 +74,13 @@ namespace UnitTests
         {
             var simpleAskCombinationSelector = CreateAskCombinationSelector();
             var stubListOfAsks = new List<Ask>();
-            var stubAsk1 = new Ask { Order = new Order() { Amount = 1m, Price = 1m } };
-            var stubAsk2 = new Ask { Order = new Order() { Amount = 2m, Price = 1m } };
+            var stubAsk1 = new Ask { Order = new Order() { Amount = 1m, Price = 1m, Type = stubAskType } };
+            var stubAsk2 = new Ask { Order = new Order() { Amount = 2m, Price = 1m, Type = stubAskType } };
             stubListOfAsks.Add(stubAsk1);
             stubListOfAsks.Add(stubAsk2);
+            var stubHigherBalanceThanRequestedAmount = 500m;
+            ExchangeBalanceTrackerMock.Setup(x => x.GetBalanceForExchange(It.IsAny<string>())).Returns(stubHigherBalanceThanRequestedAmount);
+
             var result = simpleAskCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(requestedBitcoinAmount, stubListOfAsks);
 
             Assert.IsNull(result);
@@ -81,10 +91,13 @@ namespace UnitTests
         {
             var simpleAskCombinationSelector = CreateAskCombinationSelector();
             var stubListOfAsks = new List<Ask>();
-            var stubAsk1 = new Ask { Order = new Order() { Amount = 1m, Price = 1m } };
-            var stubAsk2 = new Ask { Order = new Order() { Amount = 1m, Price = 2m } };
+            var stubAsk1 = new Ask { Order = new Order() { Amount = 1m, Price = 1m, Type = stubAskType } };
+            var stubAsk2 = new Ask { Order = new Order() { Amount = 1m, Price = 2m, Type = stubAskType } };
             stubListOfAsks.Add(stubAsk1);
             stubListOfAsks.Add(stubAsk2);
+            var stubHigherBalanceThanRequestedAmount = 500m;
+            ExchangeBalanceTrackerMock.Setup(x => x.GetBalanceForExchange(It.IsAny<string>())).Returns(stubHigherBalanceThanRequestedAmount);
+
             var result = simpleAskCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(1m, stubListOfAsks);
 
             Assert.IsTrue(result[0].Order.Price == 1m);
@@ -96,10 +109,13 @@ namespace UnitTests
         {
             var simpleAskCombinationSelector = CreateAskCombinationSelector();
             var stubListOfAsks = new List<Ask>();
-            var stubAsk1 = new Ask { Order = new Order() { Amount = 1m, Price = 1m } };
-            var stubAsk2 = new Ask { Order = new Order() { Amount = 1m, Price = 1m } };
+            var stubAsk1 = new Ask { Order = new Order() { Amount = 1m, Price = 1m, Type = stubAskType } };
+            var stubAsk2 = new Ask { Order = new Order() { Amount = 1m, Price = 1m, Type = stubAskType } };
             stubListOfAsks.Add(stubAsk1);
             stubListOfAsks.Add(stubAsk2);
+            var stubHigherBalanceThanRequestedAmount = 500m;
+            ExchangeBalanceTrackerMock.Setup(x => x.GetBalanceForExchange(It.IsAny<string>())).Returns(stubHigherBalanceThanRequestedAmount);
+
             var result = simpleAskCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(1m, stubListOfAsks);
 
             Assert.IsTrue(result.Count == 1);
@@ -112,12 +128,15 @@ namespace UnitTests
         {
             var simpleAskCombinationSelector = CreateAskCombinationSelector();
             var stubListOfAsks = new List<Ask>();
-            var stubAsk1 = new Ask { Order = new Order() { Amount = 0.5m, Price = 1m } };
-            var stubAsk2 = new Ask { Order = new Order() { Amount = 3m, Price = 3m } };
-            var stubAsk3 = new Ask { Order = new Order() { Amount = 10m, Price = 0.5m } };
+            var stubAsk1 = new Ask { Order = new Order() { Amount = 0.5m, Price = 1m, Type = stubAskType } };
+            var stubAsk2 = new Ask { Order = new Order() { Amount = 3m, Price = 3m, Type = stubAskType } };
+            var stubAsk3 = new Ask { Order = new Order() { Amount = 10m, Price = 0.5m, Type = stubAskType } };
             stubListOfAsks.Add(stubAsk1);
             stubListOfAsks.Add(stubAsk2);
             stubListOfAsks.Add(stubAsk3);
+            var stubHigherBalanceThanRequestedAmount = 500m;
+            ExchangeBalanceTrackerMock.Setup(x => x.GetBalanceForExchange(It.IsAny<string>())).Returns(stubHigherBalanceThanRequestedAmount);
+
             var result = simpleAskCombinationSelector.PrepareListOfBidsOrAsksToSatisfyTransactionAmount(1m, stubListOfAsks);
 
             Assert.IsTrue(result.Count == 1);
@@ -125,13 +144,26 @@ namespace UnitTests
             Assert.IsTrue(result[0].Order.Amount == 1m);
         }
 
+        // TODO: prepare tests for when asks are spread amongst multiple cryptoExchanges
+        // TODO: prepare tests involving exchange balance not being sufficient
+
+
         #region HelperMethods
 
         private ICombinationSelector<Ask> CreateAskCombinationSelector()
         {
-            var askCombinationSelector = new CombinationSelector<Ask>();
+            var askCombinationSelector = new CombinationSelector<Ask>(ExchangeBalanceTrackerMock.Object);
             return askCombinationSelector;
         }
+
+        [SetUp]
+        public void SetUp()
+        {
+            ExchangeBalanceTrackerMock = new Mock<IExchangeBalanceTracker>();
+        }
+
+        const string stubAskType = "Sell";
+        public Mock<IExchangeBalanceTracker> ExchangeBalanceTrackerMock { get; set; }
 
         #endregion
     }

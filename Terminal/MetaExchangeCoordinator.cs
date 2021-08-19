@@ -14,6 +14,7 @@ namespace Terminal
         private readonly ITransactionRequestProcessor _transactionRequestProcessor;
         private readonly IHedgerTransactionPresenter _hedgerTransactionPresenter;
         private readonly IConfiguration _configuration;
+        private readonly IExchangeBalanceTracker _exchangeBalanceTracker;
 
         public MetaExchangeCoordinator(IOrderBookRetriever orderBookRetriever,
             ICryptoExchangeCreator cryptoExchangeCreator, ICryptoExchangePresenter cryptoExchangePresenter,
@@ -21,7 +22,7 @@ namespace Terminal
             ITransactionRequestPresenter transactionRequestPresenter,
             ITransactionRequestProcessor transactionRequestProcessor,
             IHedgerTransactionPresenter hedgerTransactionPresenter,
-            IConfiguration configuration)
+            IConfiguration configuration, IExchangeBalanceTracker exchangeBalanceTracker)
         {
             _orderBookRetriever = orderBookRetriever;
             _cryptoExchangeCreator = cryptoExchangeCreator;
@@ -31,6 +32,7 @@ namespace Terminal
             _transactionRequestProcessor = transactionRequestProcessor;
             _hedgerTransactionPresenter = hedgerTransactionPresenter;
             _configuration = configuration;
+            _exchangeBalanceTracker = exchangeBalanceTracker;
         }
 
         public void Run()
@@ -46,6 +48,8 @@ namespace Terminal
             var cryptoExchanges = _cryptoExchangeCreator.CreateCryptoExchangesFromMultipleOrderBooks(orderBooks);
             _cryptoExchangePresenter.OutputCryptoExchangesInfo(cryptoExchanges);
 
+            _exchangeBalanceTracker.SetUpInitialExchangeBalances(cryptoExchanges);
+
             var transactionRequests = _transactionRequestRetriever.RetrieveTransactionsForProcessing();
             foreach (var transactionRequest in transactionRequests)
             {
@@ -53,7 +57,7 @@ namespace Terminal
 
                 var processorResult = _transactionRequestProcessor.ProcessTransaction(transactionRequest, cryptoExchanges);
 
-                if(processorResult.TransactionIsValid)
+                if (processorResult.TransactionIsValid)
                     _hedgerTransactionPresenter.DisplayHedgerTransactions(processorResult.HedgerTransactions);
                 else
                 {

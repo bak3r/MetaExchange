@@ -37,14 +37,10 @@ namespace Terminal
             services.AddTransient<ITransactionRequestRetriever, JsonTransactionRequestRetriever>();
             services.AddTransient<ITransactionRequestPresenter, TerminalTransactionRequestPresenter>();
             services.AddTransient<ITransactionRequestProcessor, TransactionRequestProcessor>();
-            services.AddTransient<IBuyTransactionRequestProcessor, SimpleBuyTransactionRequestProcessor>();
-            services.AddTransient<ISellTransactionRequestProcessor, SimpleSellTransactionRequestProcessor>();
             services.AddTransient<IHedgerTransactionPresenter, TerminalHedgerTransactionPresenter>();
-            services.AddTransient<IExchangeSelector, SimpleExchangeSelector>();
             services.AddTransient<ICombinationSelector<Ask>, CombinationSelector<Ask>>();
             services.AddTransient<ICombinationSelector<Bid>, CombinationSelector<Bid>>();
-            
-
+            services.AddSingleton<IExchangeBalanceTracker, SimpleExchangeBalanceTracker>();
             services.AddTransient<MetaExchangeCoordinator>();
         }
     }

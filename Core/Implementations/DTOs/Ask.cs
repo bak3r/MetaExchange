@@ -2,7 +2,7 @@
 
 namespace Core.Implementations.DTOs
 {
-    public class Ask : BidOrOrderElement, IComparable
+    public class Ask : BidOrAskElement, IComparable
     {
         public int CompareTo(object? obj)
         {
